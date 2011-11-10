@@ -235,15 +235,14 @@ class Tx_Extbase_Property_Mapper implements t3lib_Singleton {
 						}
 
 							// make sure we hand out what is expected
-						if ($propertyMetaData['type'] === 'ArrayObject') {
-							$propertyValue = new ArrayObject($objects);
-						} elseif ($propertyMetaData['type'] === 'Tx_Extbase_Persistence_ObjectStorage') {
-							$propertyValue = new Tx_Extbase_Persistence_ObjectStorage();
-							foreach ($objects as $object) {
+						if ($propertyMetaData['type'] === 'array') {
+							$propertyValue = $objects;
+						} elseif (in_array('ArrayAccess', class_implements($propertyMetaData['type']))) {
+							$propertyValue = $this->objectManager->create($propertyMetaData['type']);
+
+							foreach ($result as $object) {
 								$propertyValue->attach($object);
 							}
-						} else {
-							$propertyValue = $objects;
 						}
 					} elseif ($propertyMetaData['type'] === 'DateTime' || strpos($propertyMetaData['type'], '_') !== FALSE) {
 						$propertyValue = $this->transformToObject($propertyValue, $propertyMetaData['type'], $propertyName);
