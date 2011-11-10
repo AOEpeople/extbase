@@ -21,17 +21,53 @@
  *                                                                        */
 
 /**
- * Converter which transforms arrays and strings to Extbase ObjectStorages.
+ * Converter which transforms arrays and strings to SplObjectStorages.
  *
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License, version 3 or later
  * @api
  */
-class Tx_Extbase_Property_TypeConverter_ObjectStorageConverter extends Tx_Extbase_Property_TypeConverter_SplObjectStorageConverter {
+class Tx_Extbase_Property_TypeConverter_SplObjectStorageConverter extends Tx_Extbase_Property_TypeConverter_AbstractTypeConverter implements t3lib_Singleton {
+
+	/**
+	 * @var Tx_Extbase_Service_TypeHandlingService
+	 */
+	protected $typeHandlingService;
+
+	/**
+	 * @param Tx_Extbase_Service_TypeHandlingService $typeHandlingService
+	 * @return void
+	 */
+	public function injectTypeHandlingService(Tx_Extbase_Service_TypeHandlingService $typeHandlingService) {
+		$this->typeHandlingService = $typeHandlingService;
+	}
+
+	/**
+	 * @var array<string>
+	 */
+	protected $sourceTypes = array('string', 'array');
 
 	/**
 	 * @var string
 	 */
-	protected $targetType = 'Tx_Extbase_Persistence_ObjectStorage';
+	protected $targetType = 'SplObjectStorage';
+
+	/**
+	 * @var integer
+	 */
+	protected $priority = 1;
+
+	/**
+	 * Returns the source, if it is an array, otherwise an empty array.
+	 *
+	 * @return array
+	 * @api
+	 */
+	public function getSourceChildPropertiesToBeConverted($source) {
+		if (is_array($source)) {
+			return $source;
+		}
+		return array();
+	}
 
 	/**
 	 * Actually convert from $source to $targetType
@@ -41,11 +77,31 @@ class Tx_Extbase_Property_TypeConverter_ObjectStorageConverter extends Tx_Extbas
 	 * @param array $convertedChildProperties
 	 * @param Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration
 	 * @return array
-	 * @deprecated since Extbase 1.5.0, will be removed in Extbase 1.7.0. Use SplObjectStorage instead.
+	 * @api
 	 */
 	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration = NULL) {
-		t3lib_div::logDeprecatedFunction();
-		return parent::convertFrom($source, $targetType, $convertedChildProperties, $configuration);
+		$objectStorage = new $this->targetType;
+
+		foreach ($convertedChildProperties as $subProperty) {
+			$objectStorage->attach($subProperty);
+		}
+
+		return $objectStorage;
+	}
+
+	/**
+	 * Return the type of a given sub-property inside the $targetType
+	 *
+	 * @param string $targetType
+	 * @param string $propertyName
+	 * @param Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration
+	 * @return string
+	 * @api
+	 */
+	public function getTypeOfChildProperty($targetType, $propertyName, Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration) {
+
+		$parsedTargetType = $this->typeHandlingService->parseType($targetType);
+		return $parsedTargetType['elementType'];
 	}
 }
 ?>
