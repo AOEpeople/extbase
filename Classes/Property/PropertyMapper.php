@@ -177,6 +177,12 @@ class Tx_Extbase_Property_PropertyMapper implements t3lib_Singleton {
 				$convertedChildProperties[$targetPropertyName] = $targetPropertyValue;
 			}
 		}
+
+			/**
+			 * regex path matching magic
+			 */
+		$configuration = ($configuration->getConfigurationMatchingPath($currentPropertyPath) ?: $configuration);
+
 		$result = $typeConverter->convertFrom($source, $targetType, $convertedChildProperties, $configuration);
 
 		if ($result instanceof Tx_Extbase_Error_Error) {

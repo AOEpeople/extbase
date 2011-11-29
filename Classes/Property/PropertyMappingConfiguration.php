@@ -46,6 +46,13 @@ class Tx_Extbase_Property_PropertyMappingConfiguration implements Tx_Extbase_Pro
 	protected $subConfigurationForProperty = array();
 
 	/**
+	 * Stores the configuration for child properties identified by regular expression paths.
+	 *
+	 * @var array<Tx_Extbase_Property_PropertyMappingConfigurationInterface>
+	 */
+	protected $subConfigurationForPath = array();
+
+	/**
 	 * The parent PropertyMappingConfiguration. If a configuration value for the current entry is not found, we propagate the question to the parent.
 	 *
 	 * @var Tx_Extbase_Property_PropertyMappingConfigurationInterface
@@ -98,7 +105,33 @@ class Tx_Extbase_Property_PropertyMappingConfiguration implements Tx_Extbase_Pro
 			return $this->subConfigurationForProperty[$propertyName];
 		}
 
-		return new Tx_Extbase_Property_PropertyMappingConfiguration();
+		$emptyPropertyMappingConfiguration = new Tx_Extbase_Property_EmptyPropertyMappingConfiguration();
+		$emptyPropertyMappingConfiguration->setParent($this);
+		return $emptyPropertyMappingConfiguration;
+	}
+
+	/**
+	 * Returns a sub-configuration if the propertie's path matches one of the stored regular expressions
+	 *
+	 * @param mixed sub propertie's path as string or array
+	 * @return Tx_Extbase_Property_PropertyMappingConfigurationInterface
+	 */
+	public function getConfigurationMatchingPath($propertyPath) {
+		if ($this->parentConfiguration === NULL) {
+			if (is_array($propertyPath)) {
+				$propertyPath = implode('.', $propertyPath);
+			}
+
+			foreach ($this->subConfigurationForPath as $configurationForPath => $configuration) {
+				if (preg_match($configurationForPath, $propertyPath)) {
+					return $configuration;
+				}
+			}
+
+			return NULL;
+		} else {
+			return $this->parentConfiguration->getConfigurationMatchingPath($propertyPath);
+		}
 	}
 
 	/**
@@ -183,6 +216,30 @@ class Tx_Extbase_Property_PropertyMappingConfiguration implements Tx_Extbase_Pro
 	public function forProperty($propertyPath) {
 		$splittedPropertyPath = explode('.', $propertyPath);
 		return $this->traverseProperties($splittedPropertyPath);
+	}
+
+	/**
+	 * Returns the configuration for the path pattern, ready to be modified. Should be used
+	 * inside a fluent interface like:
+	 * $configuration->forPath('foo\..*\.')->setTypeConverterOption(....)
+	 *
+	 * @param string $pathPattern regular expression
+	 * @return Tx_Extbase_Property_PropertyMappingConfigurationInterface
+	 * @author Felix Oertel <f@oer.tel>
+	 * @api
+	 */
+	public function forPathPattern($pathPattern) {
+		if ($this->parentConfiguration === NULL) {
+			if (!isset($this->subConfigurationForPath[$pathPattern])) {
+				$type = get_class($this);
+				$this->subConfigurationForPath[$pathPattern] = new $type;
+				$this->subConfigurationForPath[$pathPattern]->setParent($this);
+			}
+
+			return $this->subConfigurationForPath[$pathPattern];
+		} else {
+			return $this->parentConfiguration->forPathPattern($pathPattern);
+		}
 	}
 
 	/**
