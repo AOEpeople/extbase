@@ -40,9 +40,21 @@ class Tx_Extbase_MVC_Controller_MvcPropertyMappingConfiguration extends Tx_Extba
 	public function allowCreationForSubProperty($propertyPath) {
 		$this->forProperty($propertyPath)->setTypeConverterOption('Tx_Extbase_Property_TypeConverter_PersistentObjectConverter', Tx_Extbase_Property_TypeConverter_PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, TRUE);
 	}
+	
+	/**
+	 * Allow creation of sub properties matching a regular expression path
+	 *
+	 * @param string $pathPattern
+	 * @return void
+	 * @author Felix Oertel <f@oer.tel>
+	 * @api
+	 */
+	public function allowCreationForPath($pathPattern) {
+		$this->forPathPattern($pathPattern)->setTypeConverterOption('Tx_Extbase_Property_TypeConverter_PersistentObjectConverter', Tx_Extbase_Property_TypeConverter_PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, TRUE);
+	}
 
 	/**
-	 * Allow modification for a given property path
+	 * Allow modification for a given sub property path
 	 *
 	 * @param string $propertyPath
 	 * @return void
@@ -51,6 +63,18 @@ class Tx_Extbase_MVC_Controller_MvcPropertyMappingConfiguration extends Tx_Extba
 	 */
 	public function allowModificationForSubProperty($propertyPath) {
 		$this->forProperty($propertyPath)->setTypeConverterOption('Tx_Extbase_Property_TypeConverter_PersistentObjectConverter', Tx_Extbase_Property_TypeConverter_PersistentObjectConverter::CONFIGURATION_MODIFICATION_ALLOWED, TRUE);
+	}
+	
+	/**
+	 * Allow modification for properties matching a regular expression path
+	 *
+	 * @param string $pathPattern
+	 * @return void
+	 * @author Felix Oertel <f@oer.tel>
+	 * @api
+	 */
+	public function allowModificationForPath($pathPattern) {
+		$this->forPathPattern($pathPattern)->setTypeConverterOption('Tx_Extbase_Property_TypeConverter_PersistentObjectConverter', Tx_Extbase_Property_TypeConverter_PersistentObjectConverter::CONFIGURATION_MODIFICATION_ALLOWED, TRUE);
 	}
 
 	/**
