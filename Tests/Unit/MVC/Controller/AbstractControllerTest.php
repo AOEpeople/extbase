@@ -145,6 +145,21 @@ class Tx_Extbase_Tests_Unit_MVC_Controller_AbstractControllerTest extends Tx_Ext
 	/**
 	 * @test
 	 */
+	public function theBaseUriIsAddedAndAdditionalSlashesGeneratedByTypolinkAreRemoved() {
+		$mockRequest = $this->getMock('Tx_Extbase_MVC_Web_Request');
+		$mockRequest->expects($this->any())->method('getBaseUri')->will($this->returnValue('http://www.example.com/foo/'));
+
+		$controller = $this->getMock($this->buildAccessibleProxy('Tx_Extbase_MVC_Controller_AbstractController'), array('dummy'), array(), '', FALSE);
+		$controller->_set('request', $mockRequest);
+		$actualResult = $controller->_call('addBaseUriIfNecessary', '/bar/baz/boom.html');
+		$expectedResult = 'http://www.example.com/foo/bar/baz/boom.html';
+
+		$this->assertEquals($expectedResult, $actualResult);
+	}
+
+	/**
+	 * @test
+	 */
 	public function theBaseUriIsNotAddedIfExternalUri() {
 		$mockRequest = $this->getMock('Tx_Extbase_MVC_Web_Request');
 		$mockRequest->expects($this->any())->method('getBaseUri')->will($this->returnValue('http://www.example.com/foo/'));
