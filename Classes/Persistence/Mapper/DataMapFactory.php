@@ -46,6 +46,11 @@ class Tx_Extbase_Persistence_Mapper_DataMapFactory implements t3lib_Singleton {
 	 */
 	protected $objectManager;
 
+	/**
+	 * @var t3lib_cache_frontend_VariableFrontend
+	 */
+	protected $dataMapCache;
+
 
 
 	/**
@@ -75,6 +80,20 @@ class Tx_Extbase_Persistence_Mapper_DataMapFactory implements t3lib_Singleton {
 	}
 
 	/**
+	 * @param t3lib_cache_Manager $cacheManager
+	 */
+	public function injectCacheManager(t3lib_cache_Manager $cacheManager) {
+		$this->cacheManager = $cacheManager;
+	}
+
+	/**
+	 * Livecycle method
+	 */
+	public function initializeObject() {
+		$this->dataMapCache = $this->cacheManager->getCache('extbase_datamapfactory_datamap');
+	}
+
+	/**
 	 * Builds a data map by adding column maps for all the configured columns in the $TCA.
 	 * It also resolves the type of values the column is holding and the typo of relation the column
 	 * represents.
@@ -83,6 +102,23 @@ class Tx_Extbase_Persistence_Mapper_DataMapFactory implements t3lib_Singleton {
 	 * @return Tx_Extbase_Persistence_Mapper_DataMap The data map
 	 */
 	public function buildDataMap($className) {
+		$dataMap = $this->dataMapCache->get($className);
+		if ($dataMap == false) {
+			$dataMap = $this->buildDataMapInternal($className);
+			$this->dataMapCache->set($className, $dataMap);
+		}
+		return $dataMap;
+	}
+
+	/**
+	 * Builds a data map by adding column maps for all the configured columns in the $TCA.
+	 * It also resolves the type of values the column is holding and the typo of relation the column
+	 * represents.
+	 *
+	 * @param string $className The class name you want to fetch the Data Map for
+	 * @return Tx_Extbase_Persistence_Mapper_DataMap The data map
+	 */
+	protected function buildDataMapInternal($className) {
 		if (!class_exists($className)) {
 			throw new Tx_Extbase_Persistence_Exception_InvalidClass('Could not find class definition for name "' . $className . '". This could be caused by a mis-spelling of the class name in the class definition.');
 		}
