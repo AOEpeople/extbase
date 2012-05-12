@@ -109,6 +109,10 @@ class Tx_Extbase_Reflection_ObjectAccess {
 				throw new Tx_Extbase_Reflection_Exception_PropertyNotAccessibleException('The property "' . $propertyName . '" on the subject does not exist.', 1302855001);
 			}
 		}
+		if ($subject instanceof Tx_Extbase_Persistence_ObjectStorage && is_numeric($propertyName)) {
+			$array= $subject->toArray();
+			return $array[$propertyName];
+		}
 		if ($subject instanceof ArrayAccess && isset($subject[$propertyName])) {
 			return $subject[$propertyName];
 		}
