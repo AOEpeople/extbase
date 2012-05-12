@@ -51,7 +51,10 @@ class Tx_Extbase_Persistence_Mapper_DataMapFactory implements t3lib_Singleton {
 	 */
 	protected $dataMapCache;
 
-
+	/**
+	 * @var t3lib_cache_Manager
+	 */
+	protected $cacheManager;
 
 	/**
 	 * Injects the reflection service
