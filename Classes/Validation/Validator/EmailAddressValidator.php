@@ -46,6 +46,7 @@ class Tx_Extbase_Validation_Validator_EmailAddressValidator extends Tx_Extbase_V
 	 */
 	public function isValid($value) {
 		$this->errors = array();
+		if (empty($value)) return true;
 		if (is_string($value) && t3lib_div::validEmail($value)) {
 			return TRUE;
 		}

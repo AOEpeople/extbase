@@ -44,6 +44,7 @@ class Tx_Extbase_Validation_Validator_IntegerValidator extends Tx_Extbase_Valida
 	 */
 	public function isValid($value) {
 		$this->errors = array();
+		if (empty($value)) return true;
 		if (filter_var($value, FILTER_VALIDATE_INT) !== FALSE) return TRUE;
 		$this->addError('The given subject was not a valid integer.', 1221560494);
 		return FALSE;
