@@ -46,6 +46,9 @@ class Tx_Extbase_Validation_Validator_EmailAddressValidator extends Tx_Extbase_V
 	 */
 	public function isValid($value) {
 		$this->errors = array();
+		
+		if (empty($value)) return true;
+		
 		if(is_string($value) && preg_match('
 				/^
 					[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*

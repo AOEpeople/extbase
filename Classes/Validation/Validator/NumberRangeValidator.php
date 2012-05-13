@@ -50,7 +50,9 @@ class Tx_Extbase_Validation_Validator_NumberRangeValidator extends Tx_Extbase_Va
 		if (isset($this->options['maximum'])) {
 			$this->options['endRange'] = $this->options['maximum'];
 		}
-
+		
+		if (empty($value)) return true;
+		
 		$this->errors = array();
 		if (!is_numeric($value)) {
 			$this->addError('The given subject was not a valid number.', 1221563685);
