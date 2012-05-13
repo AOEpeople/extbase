@@ -44,6 +44,7 @@ class Tx_Extbase_Validation_Validator_NumberValidator extends Tx_Extbase_Validat
 	 */
 	public function isValid($value) {
 		$this->errors = array();
+		if (empty($value)) return true;
 		if (is_numeric($value)) return TRUE;
 		$this->addError('The given subject was not a valid number.', 1221563685);
 		return FALSE;
