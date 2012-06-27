@@ -109,7 +109,7 @@ class Tx_Extbase_Persistence_Storage_Typo3DbBackend implements Tx_Extbase_Persis
 	 * Livecycle method
 	 */
 	public function initializeObject() {
-		$this->tableColumnCache = $this->cacheManager->getCache('extbase_datamapfactory_datamap');
+		$this->tableColumnCache = $this->cacheManager->getCache('extbase_typo3dbbackend_tablecolumns');
 	}
 
 	/**
