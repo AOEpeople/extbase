@@ -59,8 +59,8 @@ class Tx_Extbase_Object_ObjectManager implements Tx_Extbase_Object_ObjectManager
 	 * @return array Names of the properties to be serialized
 	 */
 	public function __sleep() {
-			// Use get_objects_vars() instead of
-			// a much more expensive Reflection:
+		// Use get_objects_vars() instead of
+		// a much more expensive Reflection:
 		$properties = get_object_vars($this);
 		unset($properties['objectContainer']);
 
