@@ -52,7 +52,7 @@ class Tx_Extbase_Service_TypeHandlingService implements t3lib_Singleton {
 			$type = self::normalizeType($matches['type']);
 			$elementType = isset($matches['elementType']) ? self::normalizeType($matches['elementType']) : NULL;
 
-			if ($elementType !== NULL && $type !== 'array' && !in_array('ArrayAccess', class_implements($type))) {
+			if ($elementType !== NULL && !in_array($type, array('array', 'ArrayObject', 'SplObjectStorage', 'Tx_Extbase_Persistence_ObjectStorage'))) {
 				throw new InvalidArgumentException('Type "' . $type . '" must not have an element type hint (' . $elementType . ').', 1309255650);
 			}
 

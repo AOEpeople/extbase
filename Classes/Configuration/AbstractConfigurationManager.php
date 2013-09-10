@@ -138,6 +138,9 @@ abstract class Tx_Extbase_Configuration_AbstractConfigurationManager implements 
 	public function getConfiguration($extensionName = NULL, $pluginName = NULL) {
 		// 1st level cache
 		if ($extensionName !== NULL) {
+			if ($pluginName === NULL) {
+				throw new Tx_Extbase_Configuration_Exception('You\'ll have to specify either both, extensionName and pluginName, or neither.', 1289852422);
+			}
 			$configurationCacheKey = strtolower($extensionName . '_' . $pluginName);
 		} else {
 			$configurationCacheKey = strtolower($this->extensionName . '_' . $this->pluginName);

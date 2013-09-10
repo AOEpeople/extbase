@@ -59,6 +59,16 @@ class Tx_Extbase_Persistence_Repository implements Tx_Extbase_Persistence_Reposi
 	protected $queryFactory;
 
 	/**
+	 * @var Tx_Extbase_Persistence_BackendInterface
+	 */
+	protected $backend;
+
+	/**
+	 * @var Tx_Extbase_Persistence_Session
+	 */
+	protected $session;
+
+	/**
 	 * @var Tx_Extbase_Persistence_ManagerInterface
 	 */
 	protected $persistenceManager;
@@ -100,6 +110,8 @@ class Tx_Extbase_Persistence_Repository implements Tx_Extbase_Persistence_Reposi
 			$this->injectIdentityMap($this->objectManager->get('Tx_Extbase_Persistence_IdentityMap'));
 			$this->injectQueryFactory($this->objectManager->get('Tx_Extbase_Persistence_QueryFactory'));
 			$this->injectPersistenceManager($this->objectManager->get('Tx_Extbase_Persistence_Manager'));
+			$this->injectBackend($this->objectManager->get('Tx_Extbase_Persistence_BackendInterface'));
+			$this->injectSession($this->objectManager->get('Tx_Extbase_Persistence_Session'));
 		} else {
 			$this->objectManager = $objectManager;
 		}
@@ -119,6 +131,27 @@ class Tx_Extbase_Persistence_Repository implements Tx_Extbase_Persistence_Reposi
 	 */
 	public function injectQueryFactory(Tx_Extbase_Persistence_QueryFactory $queryFactory) {
 		$this->queryFactory = $queryFactory;
+	}
+
+	/**
+	 * Injects the Persistence Backend
+	 *
+	 * @param Tx_Extbase_Persistence_BackendInterface $backend The persistence backend
+	 * @return void
+	 */
+	public function injectBackend(Tx_Extbase_Persistence_BackendInterface $backend) {
+		$this->backend = $backend;
+	}
+
+	/**
+	 *
+	 * Injects the Persistence Session
+	 *
+	 * @param Tx_Extbase_Persistence_Session $session The persistence session
+	 * @return void
+	 */
+	public function injectSession(Tx_Extbase_Persistence_Session $session) {
+		$this->session = $session;
 	}
 
 	/**
@@ -186,13 +219,11 @@ class Tx_Extbase_Persistence_Repository implements Tx_Extbase_Persistence_Reposi
 			throw new Tx_Extbase_Persistence_Exception_IllegalObjectType('The new object given to replace was not of the type (' . $this->objectType . ') this repository manages.', 1248363439);
 		}
 
-		$backend = $this->persistenceManager->getBackend();
-		$session = $this->persistenceManager->getSession();
-		$uuid = $backend->getIdentifierByObject($existingObject);
+		$uuid = $this->persistenceManager->getIdentifierByObject($existingObject);
 		if ($uuid !== NULL) {
-			$backend->replaceObject($existingObject, $newObject);
-			$session->unregisterReconstitutedObject($existingObject);
-			$session->registerReconstitutedObject($newObject);
+			$this->backend->replaceObject($existingObject, $newObject);
+			$this->session->unregisterReconstitutedObject($existingObject);
+			$this->session->registerReconstitutedObject($newObject);
 
 			if ($this->removedObjects->contains($existingObject)) {
 				$this->removedObjects->detach($existingObject);
@@ -254,9 +285,10 @@ class Tx_Extbase_Persistence_Repository implements Tx_Extbase_Persistence_Reposi
 	}
 
 	/**
-	 * Returns all objects of this repository
+	 * Returns all objects of this repository.
 	 *
-	 * @return array An array of objects, empty if no objects found
+	 * @return Tx_Extbase_Persistence_QueryResultInterface|array
+	 *         all objects, will be empty if no objects are found, will be an array if raw query results are enabled
 	 * @api
 	 */
 	public function findAll() {

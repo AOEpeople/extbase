@@ -70,6 +70,33 @@ class Tx_Extbase_Tests_Unit_Validation_Validator_NotEmptyValidatorTest extends T
 	public function notEmptyValidatorCreatesTheCorrectErrorForANullValue() {
 		$this->assertEquals(1, count($this->validator->validate(NULL)->getErrors()));
 	}
+
+	/**
+	 * @test
+	 * @author Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
+	 */
+	public function notEmptyValidatorWorksForEmptyArrays() {
+		$this->assertTrue($this->validator->validate(array())->hasErrors());
+		$this->assertFalse($this->validator->validate(array(1 => 2))->hasErrors());
+	}
+
+	/**
+	 * @test
+	 * @author Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
+	 */
+	public function notEmptyValidatorWorksForEmptyCountableObjects() {
+		$this->assertTrue($this->validator->validate(new \SplObjectStorage())->hasErrors());
+	}
+
+	/**
+	 * @test
+	 * @author Alexander Schnitzler <alex.schnitzler@typovision.de>
+	 */
+	public function notEmptyValidatorWorksForNotEmptyCountableObjects() {
+		$countableObject = new \SplObjectStorage();
+		$countableObject->attach(new \StdClass());
+		$this->assertFalse($this->validator->validate($countableObject)->hasErrors());
+	}
 }
 
 ?>

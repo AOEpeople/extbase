@@ -456,18 +456,25 @@ class Tx_Extbase_Persistence_Mapper_DataMapper implements t3lib_Singleton {
 			$propertyValue = $result;
 		} else {
 			$propertyMetaData = $this->reflectionService->getClassSchema(get_class($parentObject))->getProperty($propertyName);
-
-			if ($propertyMetaData['type'] === 'array') {
+			$columnMap = $this->getDataMap(get_class($parentObject))->getColumnMap($propertyName);
+			if (in_array($propertyMetaData['type'], array('array', 'ArrayObject', 'SplObjectStorage', 'Tx_Extbase_Persistence_ObjectStorage'))) {
+				$elementType = $this->getType(get_class($parentObject), $propertyName);
+				$objects = array();
 				foreach ($result as $value) {
-					$propertyValue[] = $value;
+					$objects[] = $value;
 				}
-			} elseif (in_array('ArrayAccess', class_implements($propertyMetaData['type']))) {
-				$propertyValue = $this->objectManager->create($propertyMetaData['type']);
 
-				foreach ($result as $object) {
+				if ($propertyMetaData['type'] === 'ArrayObject') {
+					$propertyValue = new ArrayObject($objects);
+				} elseif ($propertyMetaData['type'] === 'Tx_Extbase_Persistence_ObjectStorage') {
+					$propertyValue = new Tx_Extbase_Persistence_ObjectStorage();
+					foreach ($objects as $object) {
 					$propertyValue->attach($object);
 				}
-				//	$propertyValue->_memorizeCleanState();
+					$propertyValue->_memorizeCleanState();
+				} else {
+					$propertyValue = $objects;
+				}
 			} elseif (strpos($propertyMetaData['type'], '_') !== FALSE) {
 				if (is_object($result) && $result instanceof Tx_Extbase_Persistence_QueryResultInterface) {
 					$propertyValue = $result->getFirst();
@@ -569,7 +576,6 @@ class Tx_Extbase_Persistence_Mapper_DataMapper implements t3lib_Singleton {
 		} else {
 			throw new Tx_Extbase_Persistence_Exception_UnexpectedTypeException('Could not determine the child object type.', 1251315967);
 		}
-
 		return $type;
 	}
 

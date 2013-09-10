@@ -147,7 +147,9 @@ class Tx_Extbase_Reflection_ObjectAccess {
 		foreach ($propertyPathSegments as $pathSegment) {
 			$propertyExists = FALSE;
 			$propertyValue = self::getPropertyInternal($subject, $pathSegment, FALSE, $propertyExists);
-			if ($propertyExists !== TRUE && (is_array($subject) || $subject instanceof ArrayAccess) && isset($subject[$pathSegment])) {
+			if ($propertyExists !== TRUE && ($subject instanceof Tx_Extbase_Persistence_ObjectStorage)) {
+				$subject = NULL;
+			} elseif ($propertyExists !== TRUE && (is_array($subject) || $subject instanceof ArrayAccess) && isset($subject[$pathSegment])) {
 				$subject = $subject[$pathSegment];
 			} else {
 				$subject = $propertyValue;

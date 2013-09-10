@@ -66,14 +66,14 @@ class Tx_Extbase_Object_Container_ClassInfo {
 	 *
 	 * @var boolean
 	 */
-	private $isSingleton = FALSE;
+	private $isSingleton = false;
 
 	/**
 	 * Indicates if the class has the method initializeObject
 	 *
 	 * @var boolean
 	 */
-	private $isInitializeable = FALSE;
+	private $isInitializeable = false;
 
 	/**
 	 *
@@ -83,7 +83,7 @@ class Tx_Extbase_Object_Container_ClassInfo {
 	 * @param boolean $isSingleton
 	 * @param boolean $isInitializeable
 	 */
-	public function __construct($className, array $constructorArguments, array $injectMethods, $isSingleton = FALSE, $isInitializeable = FALSE) {
+	public function __construct($className, array $constructorArguments, array $injectMethods, $isSingleton = false, $isInitializeable = false) {
 		$this->className = $className;
 		$this->constructorArguments = $constructorArguments;
 		$this->injectMethods = $injectMethods;
@@ -92,18 +92,14 @@ class Tx_Extbase_Object_Container_ClassInfo {
 	}
 
 	/**
-	 * Gets the class name passed to constructor
-	 *
-	 * @return string
+	 * @return the $className
 	 */
 	public function getClassName() {
 		return $this->className;
 	}
 
 	/**
-	 * Get arguments passed to constructor
-	 *
-	 * @return array
+	 * @return the $constructorArguments
 	 */
 	public function getConstructorArguments() {
 		return $this->constructorArguments;
@@ -112,14 +108,14 @@ class Tx_Extbase_Object_Container_ClassInfo {
 	/**
 	 * Returns an array with the inject methods.
 	 *
-	 * @return array
+	 * @return the $injectMethods
 	 */
 	public function getInjectMethods() {
 		return $this->injectMethods;
 	}
 
 	/**
-	 * Asserts if the class is a singleton or not.
+	 * Returns if the class is a singleton or not.
 	 *
 	 * @return boolean
 	 */
@@ -128,7 +124,7 @@ class Tx_Extbase_Object_Container_ClassInfo {
 	}
 
 	/**
-	 * Asserts if the class is initializeable with initializeObject.
+	 * Returns if the class is initializeable with initializeObject.
 	 *
 	 * @return boolean
 	 */
@@ -137,9 +133,7 @@ class Tx_Extbase_Object_Container_ClassInfo {
 	}
 
 	/**
-	 * Asserts if the class has Dependency Injection methods
-	 *
-	 * @return boolean
+	 * @return the $injectMethods
 	 */
 	public function hasInjectMethods() {
 		return (count($this->injectMethods) > 0);
