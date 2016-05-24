@@ -474,7 +474,10 @@ class Tx_Extbase_MVC_Controller_ActionController extends Tx_Extbase_MVC_Controll
 				$this->flashMessageContainer->add($errorFlashMessage, '', t3lib_FlashMessage::ERROR);
 			}
 
-			$referrer = $this->request->getInternalArgument('__referrer');
+			$referrer = NULL;
+			if ($this->request instanceof Tx_Extbase_MVC_Web_Request) {
+				$referrer = $this->request->getValidatedReferrerArguments();
+			}
 			if ($referrer !== NULL) {
 				$this->forward($referrer['actionName'], $referrer['controllerName'], $referrer['extensionName'], $this->request->getArguments());
 			}

@@ -204,22 +204,34 @@ class Tx_Extbase_MVC_Web_Request extends Tx_Extbase_MVC_Request {
 	/**
 	 * Get a freshly built request object pointing to the Referrer.
 	 *
-	 * @return Request the referring request, or NULL if no referrer found
+	 * @return Tx_Extbase_MVC_Web_ReferringRequest the referring request, or NULL if no referrer found
 	 */
 	public function getReferringRequest() {
-		if (isset($this->internalArguments['__referrer']) && is_array($this->internalArguments['__referrer'])) {
-			$referrerArray = $this->internalArguments['__referrer'];
-
-			$referringRequest = new Tx_Extbase_MVC_Web_Request;
-
+		$referrerArray = $this->getValidatedReferrerArguments();
+		if ($referrerArray !== NULL) {
 			$arguments = array();
-			if (isset($referrerArray['arguments'])) {
-				$arguments = unserialize($referrerArray['arguments']);
-				unset($referrerArray['arguments']);
+			if (isset($this->internalArguments['__referrer']['arguments'])) {
+				$arguments = unserialize(base64_decode($this->hashService->validateAndStripHmac($this->internalArguments['__referrer']['arguments'])));
 			}
-
+			$referringRequest = new Tx_Extbase_MVC_Web_ReferringRequest();
 			$referringRequest->setArguments(Tx_Extbase_Utility_Arrays::arrayMergeRecursiveOverrule($arguments, $referrerArray));
 			return $referringRequest;
+		}
+		return NULL;
+	}
+
+	/**
+	 * @return array|NULL
+	 * @throws Tx_Extbase_Security_Exception_InvalidArgumentForHashGeneration
+	 * @throws Tx_Extbase_Security_Exception_InvalidHash
+	 */
+	public function getValidatedReferrerArguments() {
+		if (isset($this->internalArguments['__referrer']['@request'])) {
+			$referrerArguments = unserialize($this->hashService->validateAndStripHmac($this->internalArguments['__referrer']['@request']));
+			if (!is_array($referrerArguments)) {
+				$referrerArguments = NULL;
+			}
+			return $referrerArguments;
 		}
 		return NULL;
 	}

@@ -77,6 +77,7 @@ return array(
 	'tx_extbase_mvc_web_abstractrequesthandler' => $extensionClassesPath . 'MVC/Web/AbstractRequestHandler.php',
 	'tx_extbase_mvc_web_backendrequesthandler' => $extensionClassesPath . 'MVC/Web/BackendRequestHandler.php',
 	'tx_extbase_mvc_web_frontendrequesthandler' => $extensionClassesPath . 'MVC/Web/FrontendRequestHandler.php',
+	'tx_extbase_mvc_web_referringrequest' => $extensionClassesPath . 'MVC/Web/ReferringRequest.php',
 	'tx_extbase_mvc_web_request' => $extensionClassesPath . 'MVC/Web/Request.php',
 	'tx_extbase_mvc_web_requestbuilder' => $extensionClassesPath . 'MVC/Web/RequestBuilder.php',
 	'tx_extbase_mvc_web_response' => $extensionClassesPath . 'MVC/Web/Response.php',
